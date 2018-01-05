@@ -15,15 +15,18 @@ class myThread( threading.Thread ):
         # print("Starting thread {id}: {u}".format(id=self.id,u=self.url))
         tree = getSite(self.url)
         wordList = findWord(tree,self.word)
-        email = 'To:\nSubject:BlockchainAlert\n\n'
+        email = 'To:foukster@gmail.com\nSubject:[NewsParser]BlockchainAlert\n\n'
         if wordList:
-            print(self.title + ": " + self.url)
-            email = email + self.title + ": " + self.url + "\n"
-            for eachword in wordList:
-                print("     "+eachword)
-                email = email + "       "+eachword+"\n\n"
-            print("\n")
-            call("printf '"+email+"' | ssmtp -t -au",shell=True)
+			try:
+				print(self.title + ": " + self.url)
+				email = email + self.title + ": " + self.url + "\n"
+				for eachword in wordList:
+					print("     "+eachword)
+					email = email + "       "+eachword+"\n\n"
+				print("\n")
+			except:
+				email = email + self.url+"\n"
+			call("printf '"+email+"' | ssmtp -t",shell=True)
 
 
 def getSite( url ):
@@ -47,10 +50,10 @@ def searchNews(word):
     linkList = grabLinksFromFinviz()
     #start new threads for each link
     lasturl = ''
-    with open ("lasturl.txt","r") as readfile:
+    with open ("/home/pi/lasturl.txt","r") as readfile:
         lasturl = readfile.read()
 
-    with open ("lasturl.txt","w") as writefile:
+    with open ("/home/pi/lasturl.txt","w") as writefile:
         writefile.write(linkList[0].attrib.get('href'))
 
     for link in linkList:
